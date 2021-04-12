@@ -1,7 +1,7 @@
 #day 7 - distributions - physical
 
 library(pacman)
-pacman::p_load(tidyverse, plotly, cowplot, magick, showtext, extrafont, ggtext, ggridges)
+pacman::p_load(tidyverse, plotly, cowplot, magick, showtext, extrafont, ggtext, ggridges, pdftools, here, ragg)
 
 font_add_google("Lobster", "Lobster")
 
@@ -31,14 +31,23 @@ ggplot(waves, aes(GRID_CODE, Y)) +
     axis.text.y = element_blank(),
     axis.title.y = element_text(),
     axis.ticks.y = element_blank(),
-    text = element_text(family = "treasure",size=20),
-    text.title = element_text(color="red")
+    text = element_text(family = "treasure",size=18),
+    plot.title = element_text(color="#990000", hjust=0.5),
+    plot.caption = element_text(family = "sans",size=10, hjust=0.5,color="grey60")
   ) +
   geom_segment(data=lines, aes(x=0, xend=5, y=lat, yend=lat), color= "grey30", linetype="dashed") +
-  geom_text(data=lines, aes(x=0,y=lat, label=names), family="treasure",size=6,hjust=0, vjust=1) +
-  geom_text(data=meslab, aes(x=4,y=lat,label=lab), family="treasure", size=7, color="red") +
-  labs(title = "Wave heights across latitude") +
-  labs(caption = "viz Mélody Prémaillon | 30DayChartChallenge day 7; physical | data : ERAinterim")
+  geom_text(data=lines, aes(x=0,y=lat, label=names), family="treasure",size=6,hjust=0, vjust=0) +
+  geom_text(data=meslab, aes(x=4.2,y=lat,label=lab), family="treasure", size=6, color="#990000") +
+  labs(title = "Wave height across latitude") +
+  labs(caption = "viz Mélody Prémaillon | 30DayChartChallenge day7:physical | data : ERAinterim")
 
-ggsave("CHARTS/day7_physical.pdf",width = 4.5,height=8)
+file <- here::here("CHARTS", "07_physical.pdf")
 
+#ggsave(file,width = 6,height=12, device=cairo_pdf)
+ggsave(file, width = 6, height = 12)
+
+pdftools::pdf_convert(
+  pdf = file, 
+  filenames = glue::glue("{str_remove(file, '.pdf')}.png"),
+  format = "png", dpi = 200
+)
